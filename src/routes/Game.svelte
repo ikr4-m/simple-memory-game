@@ -1,7 +1,9 @@
 <script>
   import Moment from "moment";
-  import { InitialTimer } from "$lib/config";
+  import GenerateBlock from "$lib/generateBlock";
+  import { InitialTimer, InitialDimension } from "$lib/config";
 
+  const Block = new GenerateBlock();
   let enableTimer = true;
   let targetTimer = InitialTimer;
   let timer = Moment();
@@ -20,12 +22,15 @@
     if (!enableTimer) return;
     if (timerDiff <= 0) {
       enableTimer = false;
-      alert("Lmao you lose.");
     }
 
     timer = Moment();
   }, 1);
   timerInterval();
+
+  console.log(Block.arena);
+  Block.expandArena();
+  console.log(Block.arena);
 </script>
 
 <div class="h-screen w-screen max-w-screen p-10 bg-coffee-bg">
