@@ -64,6 +64,8 @@ export default class GenerateBlock {
     const randomCard = this.pullRandomCard(this.getEstimateCard(xTotal, yTotal));
     const shuffled = this.multiplyShuffleCard(randomCard);
 
+    this.arena = [];
+    this.arenaKey = [];
     for (let y = 0; y < yTotal; y++) {
       this.arena.push([]);
       this.arenaKey.push([]);
@@ -75,8 +77,8 @@ export default class GenerateBlock {
   }
 
   public expandArena(): void {
-    let yRange = this.arena.length;
-    let xRange = this.arena[0].length;
+    let yRange = this.arenaKey.length;
+    let xRange = this.arenaKey[0].length;
 
     if (this.blockDirection === "vertical") {
       yRange += this.dimension;
@@ -107,6 +109,11 @@ export default class GenerateBlock {
         this.revealedCard.push(card1);
         this.openedCard = [];
       }
+    }
+
+    if (this.revealedCard.length === this.getEstimateCard()) {
+      status = "levelUp";
+      this.revealedCard = [];
     }
 
     return status;

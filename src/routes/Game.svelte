@@ -38,7 +38,6 @@
 
   const expandLevel = () => {
     Block.expandArena();
-    refreshArena();
 
     // TODO: Hapus nanti abis bikin logic untuk cocokin datanya
     if (Block.reachingLimitLevel) {
@@ -60,6 +59,9 @@
       await new Promise(resolve => setTimeout(resolve, DelayPunishment * 1000));
       Block.closeRejectedCard();
       isAnimated = false;
+    }
+    if (valid === "levelUp") {
+      expandLevel();
     }
 
     refreshArena();
