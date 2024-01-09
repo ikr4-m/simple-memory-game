@@ -5,7 +5,7 @@ type TBlockDirection = "vertical" | "horizontal";
 export default class GenerateBlock {
   private dimension: number = 0;
   private blockDirection: TBlockDirection = "vertical";
-  private cardList: typeof CardList = CardList;
+  private cardList: typeof CardList = [...CardList];
 
   public arena: typeof CardList[] = [];
 
@@ -27,7 +27,7 @@ export default class GenerateBlock {
   private pullRandomCard(cardTotal: number): typeof CardList {
     const pulledCard: typeof CardList = [];
     for (let i = 0; i < cardTotal; i++) {
-      if (this.cardList.length <= 0) this.cardList = CardList;
+      if (this.cardList.length <= 0) this.cardList = [...CardList];
       const indexCard = Math.floor(Math.random() * this.cardList.length);
       const randCard = this.cardList[indexCard];
 
@@ -52,7 +52,17 @@ export default class GenerateBlock {
   }
 
   public expandArena(): void {
-    const yRange = this.arena.length;
-    const xRange = this.arena[0].length;
+    let yRange = this.arena.length;
+    let xRange = this.arena[0].length;
+
+    if (this.blockDirection === "vertical") {
+      yRange += this.dimension;
+      this.blockDirection = "horizontal";
+    } else {
+      xRange += this.dimension;
+      this.blockDirection = "vertical";
+    }
+
+    this.generateArena(xRange, yRange);
   }
 }

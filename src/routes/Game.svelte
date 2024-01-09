@@ -1,7 +1,7 @@
 <script>
   import Moment from "moment";
   import GenerateBlock from "$lib/generateBlock";
-  import { InitialTimer, InitialDimension } from "$lib/config";
+  import { InitialTimer } from "$lib/config";
 
   const Block = new GenerateBlock();
   let enableTimer = true;
@@ -28,6 +28,13 @@
   }, 1);
   timerInterval();
 
+  // TODO: Nanti dihapus, malas
+  console.log(Block.arena);
+  Block.expandArena();
+  console.log(Block.arena);
+  Block.expandArena();
+  console.log(Block.arena);
+  Block.expandArena();
   console.log(Block.arena);
   Block.expandArena();
   console.log(Block.arena);
