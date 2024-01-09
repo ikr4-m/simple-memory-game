@@ -7,15 +7,11 @@
   let enableTimer = false;
   let targetTimer = InitialTimer;
   let timer = Moment();
-  
-  // Variable for block
-  const Block = new GenerateBlock();
-  let arena = Block.arena;
 
   $: timerDiff = maxTimer.diff(timer);
   $: maxTimer = Moment().add(targetTimer, 's');
   $: timerPercentage = (timerDiff / (targetTimer * 1000)) * 100;
-
+  
   const incrementTimer = () => {
     if (!enableTimer) return;
     timer = Moment();
@@ -31,9 +27,15 @@
     timer = Moment();
   }, 1);
 
+  // Variable for block
+  const Block = new GenerateBlock();
+  let [arena, arenaKey] = Block.getArena();
+
+  const refreshArena = () => [arena, arenaKey] = Block.getArena();
+
   const expandLevel = () => {
     Block.expandArena();
-    arena = Block.arena;
+    arena = Block.getArena()[0];
 
     // TODO: Hapus nanti abis bikin logic untuk cocokin datanya
     if (Block.reachingLimitLevel) {
@@ -64,8 +66,14 @@
         {#each arena as yArena, y}
           <div id="arena-{y}" class="flex">
             {#each yArena as xArena, x}
-              <button id="item-{y}-{x}" on:click={() => expandLevel()} class="m-1 w-16 h-16 rounded-xl transition ease-in-out duration-100 bg-coffee-card hover:bg-coffee-card-hover flex">
-                <span class="m-auto font-bold">{xArena.alt}</span>
+              <button
+                id="item-{y}-{x}"
+                on:click={() => {
+                  Block.revealCard(x, y);
+                  refreshArena();
+                }}
+                class="m-1 w-16 h-16 rounded-xl transition ease-in-out duration-100 bg-coffee-card hover:bg-coffee-card-hover flex">
+                <span class="m-auto font-bold">{xArena}</span>
               </button>
             {/each}
           </div>

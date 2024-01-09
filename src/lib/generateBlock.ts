@@ -6,8 +6,8 @@ export default class GenerateBlock {
   private dimension: number = 0;
   private blockDirection: TBlockDirection = "vertical";
   private cardList: typeof CardList = [...CardList];
-
-  public arena: typeof CardList[] = [];
+  private arenaKey: typeof CardList[] = [];
+  private arena: any[][] = [];
   public reachingLimitLevel: boolean = false;
 
   constructor() {
@@ -38,23 +38,27 @@ export default class GenerateBlock {
     return pulledCard;
   }
 
+  public getEstimateCard(x: number = this.arena[0].length, y: number = this.arena.length): number {
+    return Math.floor((x * y) / 2);
+  }
+
   public generateArena(xTotal: number = this.dimension, yTotal: number = this.dimension) {
     if (this.reachingLimitLevel) return;
     if (Math.pow(MaximumDimension, 2) < (xTotal * yTotal)) {
       this.reachingLimitLevel = true;
       return;
     }
-    const arena: typeof CardList[] = [];
-    const randomCard = this.pullRandomCard(Math.floor((xTotal * yTotal) / 2));
+    const randomCard = this.pullRandomCard(this.getEstimateCard(xTotal, yTotal));
     const shuffled = this.multiplyShuffleCard(randomCard);
 
     for (let y = 0; y < yTotal; y++) {
-      arena.push([]);
+      this.arena.push([]);
+      this.arenaKey.push([]);
       for (let x = 0; x < xTotal; x++) {
-        arena[y].push(shuffled.pop()!);
+        this.arena[y].push("");
+        this.arenaKey[y].push(shuffled.pop()!);
       }
     }
-    this.arena = arena;
   }
 
   public expandArena(): void {
@@ -70,5 +74,13 @@ export default class GenerateBlock {
     }
 
     this.generateArena(xRange, yRange);
+  }
+
+  public revealCard(x: number, y:number): void {
+    this.arena[y][x] = this.arenaKey[y][x].alt;
+  }
+
+  public getArena(): [typeof this.arena, typeof CardList[]] {
+    return [this.arena, this.arenaKey];
   }
 }
