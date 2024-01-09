@@ -1,7 +1,7 @@
 <script>
   import Moment from "moment";
   import GenerateBlock from "$lib/generateBlock";
-  import { InitialTimer } from "$lib/config";
+  import { InitialTimer, DelayPunishment } from "$lib/config";
 
   // Variable for timer
   let enableTimer = false;
@@ -29,18 +29,40 @@
 
   // Variable for block
   const Block = new GenerateBlock();
+  let isAnimated = false;
   let [arena, arenaKey] = Block.getArena();
 
-  const refreshArena = () => [arena, arenaKey] = Block.getArena();
+  const refreshArena = () => {
+    [arena, arenaKey] = Block.getArena();
+  };
 
   const expandLevel = () => {
     Block.expandArena();
-    arena = Block.getArena()[0];
+    refreshArena();
 
     // TODO: Hapus nanti abis bikin logic untuk cocokin datanya
     if (Block.reachingLimitLevel) {
       alert("You're done!");
     }
+  }
+
+  /**
+   * @param {number} x
+   * @param {number} y
+   */
+  const cardClicked = async (x, y) => {
+    if (isAnimated) return;
+    const valid = Block.validateCard(x, y);
+
+    if (valid === "rejected") {
+      isAnimated = true;
+      refreshArena();
+      await new Promise(resolve => setTimeout(resolve, DelayPunishment * 1000));
+      Block.closeRejectedCard();
+      isAnimated = false;
+    }
+
+    refreshArena();
   }
 </script>
 
@@ -68,10 +90,7 @@
             {#each yArena as xArena, x}
               <button
                 id="item-{y}-{x}"
-                on:click={() => {
-                  Block.revealCard(x, y);
-                  refreshArena();
-                }}
+                on:click={async () => await cardClicked(x, y)}
                 class="m-1 w-16 h-16 rounded-xl transition ease-in-out duration-100 bg-coffee-card hover:bg-coffee-card-hover flex">
                 <span class="m-auto font-bold">{xArena}</span>
               </button>

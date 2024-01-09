@@ -1,13 +1,26 @@
 import { CardList, InitialDimension, MaximumDimension } from "./config";
 
 type TBlockDirection = "vertical" | "horizontal";
+type TCardValidation = "opened" | "rejected" | "levelUp";
+interface ICardPosition {
+  alt: number,
+  position: {
+    x: number;
+    y: number;
+  }
+}
 
 export default class GenerateBlock {
   private dimension: number = 0;
   private blockDirection: TBlockDirection = "vertical";
+
   private cardList: typeof CardList = [...CardList];
   private arenaKey: typeof CardList[] = [];
   private arena: any[][] = [];
+
+  private openedCard: ICardPosition[] = [];
+  private revealedCard: ICardPosition[] = [];
+
   public reachingLimitLevel: boolean = false;
 
   constructor() {
@@ -76,8 +89,34 @@ export default class GenerateBlock {
     this.generateArena(xRange, yRange);
   }
 
-  public revealCard(x: number, y:number): void {
-    this.arena[y][x] = this.arenaKey[y][x].alt;
+  public validateCard(x: number, y:number): TCardValidation {
+    const card = this.arenaKey[y][x];
+    let status: TCardValidation = "opened";
+    this.arena[y][x] = card.alt;
+
+    this.openedCard.push({
+      alt: card.alt,
+      position: { x: x, y: y }
+    });
+
+    if (this.openedCard.length === 2) {
+      const [card1, card2] = this.openedCard;
+
+      if (card1.alt !== card2.alt) status = "rejected";
+      else {
+        this.revealedCard.push(card1);
+        this.openedCard = [];
+      }
+    }
+
+    return status;
+  }
+
+  public closeRejectedCard(): void {
+    this.openedCard.forEach(v => {
+      this.arena[v.position.y][v.position.x] = "";
+    });
+    this.openedCard = [];
   }
 
   public getArena(): [typeof this.arena, typeof CardList[]] {
