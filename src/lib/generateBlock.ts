@@ -1,4 +1,4 @@
-import { CardList, InitialDimension } from "./config";
+import { CardList, InitialDimension, MaximumDimension } from "./config";
 
 type TBlockDirection = "vertical" | "horizontal";
 
@@ -8,6 +8,7 @@ export default class GenerateBlock {
   private cardList: typeof CardList = [...CardList];
 
   public arena: typeof CardList[] = [];
+  public reachingLimitLevel: boolean = false;
 
   constructor() {
     this.dimension = InitialDimension;
@@ -38,6 +39,11 @@ export default class GenerateBlock {
   }
 
   public generateArena(xTotal: number = this.dimension, yTotal: number = this.dimension) {
+    if (this.reachingLimitLevel) return;
+    if (Math.pow(MaximumDimension, 2) < (xTotal * yTotal)) {
+      this.reachingLimitLevel = true;
+      return;
+    }
     const arena: typeof CardList[] = [];
     const randomCard = this.pullRandomCard(Math.floor((xTotal * yTotal) / 2));
     const shuffled = this.multiplyShuffleCard(randomCard);

@@ -3,10 +3,14 @@
   import GenerateBlock from "$lib/generateBlock";
   import { InitialTimer } from "$lib/config";
 
-  const Block = new GenerateBlock();
+  // Variable for timer
   let enableTimer = false;
   let targetTimer = InitialTimer;
   let timer = Moment();
+  
+  // Variable for block
+  const Block = new GenerateBlock();
+  let arena = Block.arena;
 
   $: timerDiff = maxTimer.diff(timer);
   $: maxTimer = Moment().add(targetTimer, 's');
@@ -26,18 +30,16 @@
 
     timer = Moment();
   }, 1);
-  timerInterval();
 
-  // TODO: Nanti dihapus, malas
-  console.log(Block.arena);
-  Block.expandArena();
-  console.log(Block.arena);
-  Block.expandArena();
-  console.log(Block.arena);
-  Block.expandArena();
-  console.log(Block.arena);
-  Block.expandArena();
-  console.log(Block.arena);
+  const expandLevel = () => {
+    Block.expandArena();
+    arena = Block.arena;
+
+    // TODO: Hapus nanti abis bikin logic untuk cocokin datanya
+    if (Block.reachingLimitLevel) {
+      alert("You're done!");
+    }
+  }
 </script>
 
 <div class="h-screen w-screen max-w-screen p-10 bg-coffee-bg">
@@ -58,7 +60,17 @@
 
     <!-- Arena -->
     <div class="w-full h-[89%] flex">
-      <p class="m-auto text-5xl font-bold" on:click={() => incrementTimer()}>Click to increment timer!</p>
+      <div class="m-auto">
+        {#each arena as yArena, y}
+          <div id="arena-{y}" class="flex">
+            {#each yArena as xArena, x}
+              <button id="item-{y}-{x}" on:click={() => expandLevel()} class="m-1 w-16 h-16 rounded-xl transition ease-in-out duration-100 bg-coffee-card hover:bg-coffee-card-hover flex">
+                <span class="m-auto font-bold">{xArena.alt}</span>
+              </button>
+            {/each}
+          </div>
+        {/each}
+      </div>
     </div>
 
     <!-- Timer -->

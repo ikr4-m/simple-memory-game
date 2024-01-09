@@ -1,5 +1,6 @@
 export const InitialTimer: number = 10;
 export const InitialDimension: number = 2;
+export const MaximumDimension: number = 10;
 
 export interface ICardList {
   alt: number;
