@@ -16,7 +16,7 @@ export default class GenerateBlock {
 
   private cardList: typeof CardList = [...CardList];
   private arenaKey: typeof CardList[] = [];
-  private arena: any[][] = [];
+  private arena: string[][] = [];
 
   private openedCard: ICardPosition[] = [];
   private revealedCard: ICardPosition[] = [];
@@ -98,7 +98,7 @@ export default class GenerateBlock {
 
     // Assume double clicking the tile that opened is invalid
     if (this.arena[y][x]) return "opened";
-    this.arena[y][x] = card.alt;
+    this.arena[y][x] = card.img;
 
     this.openedCard.push({
       alt: card.alt,

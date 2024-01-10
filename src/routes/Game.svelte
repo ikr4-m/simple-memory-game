@@ -34,6 +34,8 @@
 
   const refreshArena = () => {
     [arena, arenaKey] = Block.getArena();
+    console.log(arenaKey);
+    console.log(arena);
   };
 
   const expandLevel = () => {
@@ -61,6 +63,8 @@
       isAnimated = false;
     }
     if (valid === "levelUp") {
+      refreshArena();
+      await new Promise(resolve => setTimeout(resolve, 1000));
       expandLevel();
     }
 
@@ -93,8 +97,10 @@
               <button
                 id="item-{y}-{x}"
                 on:click={async () => await cardClicked(x, y)}
-                class="m-1 w-16 h-16 rounded-xl transition ease-in-out duration-100 bg-coffee-card hover:bg-coffee-card-hover flex">
-                <span class="m-auto font-bold">{xArena}</span>
+                class={`m-1 w-16 h-16 rounded-xl transition ease-in-out duration-100 ${xArena === "" ? "bg-coffee-card" : "bg-coffee-card-active"} hover:bg-coffee-card-hover flex`}>
+                {#if xArena !== ""}
+                  <img src={xArena} alt="gambar" class="h-full m-auto">
+                {/if}
               </button>
             {/each}
           </div>
