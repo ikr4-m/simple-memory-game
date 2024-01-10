@@ -94,11 +94,15 @@ export default class GenerateBlock {
   public validateCard(x: number, y:number): TCardValidation {
     const card = this.arenaKey[y][x];
     let status: TCardValidation = "opened";
+    const position = { x: x, y: y };
+
+    // Assume double clicking the tile that opened is invalid
+    if (this.arena[y][x]) return "opened";
     this.arena[y][x] = card.alt;
 
     this.openedCard.push({
       alt: card.alt,
-      position: { x: x, y: y }
+      position
     });
 
     if (this.openedCard.length === 2) {
