@@ -1,7 +1,7 @@
 import { CardList, InitialDimension, MaximumDimension } from "./config";
 
 type TBlockDirection = "vertical" | "horizontal";
-type TCardValidation = "opened" | "rejected" | "levelUp";
+type TCardValidation = "opened" | "rejected" | "levelUp" | "paired";
 interface ICardPosition {
   alt: number,
   position: {
@@ -98,7 +98,7 @@ export default class GenerateBlock {
 
     // Assume double clicking the tile that opened is invalid
     if (this.arena[y][x]) return "opened";
-    this.arena[y][x] = card.img;
+    this.arena[y][x] = card.img!;
 
     this.openedCard.push({
       alt: card.alt,
@@ -112,6 +112,7 @@ export default class GenerateBlock {
       else {
         this.revealedCard.push(card1);
         this.openedCard = [];
+        status = "paired";
       }
     }
 
