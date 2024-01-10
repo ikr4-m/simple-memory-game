@@ -3,18 +3,23 @@
   import GenerateBlock from "$lib/generateBlock";
   import { InitialTimer, DelayPunishment } from "$lib/config";
 
+  // Variable for game
+  let gameStarted = false;
+
   // Variable for timer
   let enableTimer = false;
   let targetTimer = InitialTimer;
+  let startTime = Moment();
   let timer = Moment();
 
+  $: maxTimer = startTime.add(targetTimer, 's');
   $: timerDiff = maxTimer.diff(timer);
-  $: maxTimer = Moment().add(targetTimer, 's');
   $: timerPercentage = (timerDiff / (targetTimer * 1000)) * 100;
   
   const incrementTimer = () => {
     if (!enableTimer) return;
     timer = Moment();
+    startTime = Moment();
     targetTimer += InitialTimer;
   }
 
@@ -22,6 +27,7 @@
     if (!enableTimer) return;
     if (timerDiff <= 0) {
       enableTimer = false;
+      alert("Finish!");
     }
 
     timer = Moment();
@@ -40,6 +46,7 @@
 
   const expandLevel = () => {
     Block.expandArena();
+    incrementTimer();
 
     // TODO: Hapus nanti abis bikin logic untuk cocokin datanya
     if (Block.reachingLimitLevel) {
@@ -52,6 +59,7 @@
    * @param {number} y
    */
   const cardClicked = async (x, y) => {
+    if (!enableTimer) return;
     if (isAnimated) return;
     const valid = Block.validateCard(x, y);
 
@@ -64,11 +72,23 @@
     }
     if (valid === "levelUp") {
       refreshArena();
+      enableTimer = false;
       await new Promise(resolve => setTimeout(resolve, 1000));
+      enableTimer = true;
       expandLevel();
     }
 
     refreshArena();
+  }
+
+  const startGame = () => {
+    if (enableTimer || gameStarted) return;
+    enableTimer = true;
+    gameStarted = true;
+
+    timer = Moment();
+    startTime = Moment();
+    timerInterval();
   }
 </script>
 
@@ -96,7 +116,10 @@
             {#each yArena as xArena, x}
               <button
                 id="item-{y}-{x}"
-                on:click={async () => await cardClicked(x, y)}
+                on:click={async () => {
+                  if (!gameStarted) startGame();
+                  await cardClicked(x, y);
+                }}
                 class={`m-1 w-16 h-16 rounded-xl transition ease-in-out duration-100 ${xArena === "" ? "bg-coffee-card" : "bg-coffee-card-active"} hover:bg-coffee-card-hover flex`}>
                 {#if xArena !== ""}
                   <img src={xArena} alt="gambar" class="h-full m-auto">
